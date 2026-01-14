@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>beep</title>
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    button {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: none;
+      background: black;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<button id="btn"></button>
+
+<script>
+  // WebSocket 接続
+  const protocol = location.protocol === "https:" ? "wss" : "ws";
+  const ws = new WebSocket(`${protocol}://${location.host}`);
+
+
+  // ビープ音を作る関数（音ファイルなし）
+  function playBeep() {
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    osc.frequency.value = 880; // 音階（Hz）
+    osc.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.5); // 0.5秒
+  }
+
+  // 自分が押したとき
+  document.getElementById("btn").onclick = () => {
+    ws.send("beep");
+  };
+
+  // 誰かが押したとき（自分含む）
+  ws.onmessage = () => {
+    playBeep();
+  };
+</script>
+
+</body>
+</html>
