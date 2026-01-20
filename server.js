@@ -1,30 +1,44 @@
 const http = require("http");
 const fs = require("fs");
+const path = require("path");
 const WebSocket = require("ws");
 
-// HTTPサーバー（HTMLを配信）
 const server = http.createServer((req, res) => {
-  const html = fs.readFileSync("index.html");
-  res.writeHead(200, { "Content-Type": "text/html" });
-  res.end(html);
+  let filePath = "./public" + (req.url === "/" ? "/index.html" : req.url);
+  let ext = path.extname(filePath);
+
+  const contentTypeMap = {
+    ".html": "text/html",
+    ".js": "text/javascript"
+  };
+
+  fs.readFile(filePath, (err, content) => {
+    if (err) {
+      res.writeHead(404);
+      res.end("Not found");
+    } else {
+      res.writeHead(200, {
+        "Content-Type": contentTypeMap[ext] || "text/plain"
+      });
+      res.end(content);
+    }
+  });
 });
 
-// WebSocket（押した通知を全員に送る）
 const wss = new WebSocket.Server({ server });
 
-wss.on("connection", (ws) => {
-  ws.on("message", () => {
-    wss.clients.forEach((client) => {
+wss.on("connection", ws => {
+  ws.on("message", message => {
+    // 受け取ったイベントを全員にそのまま配信
+    wss.clients.forEach(client => {
       if (client.readyState === WebSocket.OPEN) {
-        client.send("beep");
+        client.send(message.toString());
       }
     });
   });
 });
 
-// サーバー起動
 const PORT = process.env.PORT || 3000;
-
 server.listen(PORT, () => {
-  console.log("Server running");
+  console.log("Server running on port " + PORT);
 });
