@@ -1,16 +1,20 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <title>Beep</title>
+  <meta charset="UTF-8">
+  <title>Beep Site</title>
   <style>
     body {
       margin: 0;
       background: white;
+      height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+    }
+
+    .container {
+      display: flex;
       gap: 20px;
     }
 
@@ -19,15 +23,21 @@
       padding: 20px 30px;
       cursor: pointer;
     }
+
+    button:disabled {
+      background: #aaa;
+      cursor: not-allowed;
+    }
   </style>
 </head>
 <body>
 
-  <button data-pitch="low">LOW</button>
-  <button data-pitch="mid">MID</button>
-  <button data-pitch="high">HIGH</button>
+  <div class="container">
+    <button data-pitch="300">低</button>
+    <button data-pitch="600">中</button>
+    <button data-pitch="900">高</button>
+  </div>
 
   <script src="script.js"></script>
 </body>
 </html>
-
