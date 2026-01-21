@@ -31,11 +31,20 @@ function startBeep(pitch) {
   }
 
   oscillator = audioCtx.createOscillator();
+  gainNode = audioCtx.createGain();
+
   oscillator.type = "sine";
   oscillator.frequency.value = pitch;
-  oscillator.connect(audioCtx.destination);
+
+  // ★ 音量をここで固定（0.0〜1.0）
+  gainNode.gain.value = 0.05;
+
+  oscillator.connect(gainNode);
+  gainNode.connect(audioCtx.destination);
+
   oscillator.start();
 }
+
 
 function stopBeep() {
   if (oscillator) {
